@@ -16,7 +16,8 @@ export const getStateError = function (state) {
   // }
 }
 
-export const createActions = (list) => (R.zipObj(list, R.times(() => stream(), list.length)));
+export const createActions = (list) => R.zipObj(list, R.times(() => stream(), list.length));
+export const filterByParent = R.pipe(R.propEq('pid'), R.filter);
 
 export const addToList = R.curry((props, list) => {
   let newChild,
@@ -49,6 +50,7 @@ export const editListChildren = R.curry((c, prcnt, list) => {
     .map(i => ({...i, prcnt: currentPrcnt}));
 
   newList.push({...c, prcnt: prcnt})
+
   return newList;
 });
 
@@ -65,6 +67,18 @@ export const removeFromList = R.curry((c, list) => {
     .map(i => ({...i, prcnt: currentPrcnt}));
 
   return newList;
+});
+
+export const removeWithParent = R.curry((pid, list) => {
+  let newList,
+    currentPrcnt;
+
+    let childrens = filterByParent(pid)(list);
+    let lengthLeft = list.length - childrens.length;
+    currentPrcnt = lengthLeft > 1 ? 100 / lengthLeft : 100;
+    newList = R.map(i => ({...i, prcnt: currentPrcnt}), R.without(childrens, list));
+
+    return newList;
 });
 
 function sliceList(i, list) {
