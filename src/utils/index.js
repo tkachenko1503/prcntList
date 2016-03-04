@@ -2,20 +2,6 @@ import R from 'ramda';
 import {stream, map} from 'flyd';
 import mergeAll from 'flyd/module/mergeall';
 
-export const getStateError = function (state) {
-  // if (state.categories.length === 0) {
-  //   return {type: 'EMPTY_LIST'};
-  // }
-  //
-  // let catIds = R.pluck('id', state.categories);
-  // let itemsPids = R.pluck('pid', state.items);
-  // let diff = [for (i of catIds) if (itemsPids.indexOf(i) === -1) i];
-  //
-  // if (state.items.length === 0 || diff.length > 0) {
-  //     return {type: 'EMPTY_CATEGORY'};
-  // }
-}
-
 export const createActions = (list) => R.zipObj(list, R.times(() => stream(), list.length));
 export const filterByParent = R.pipe(R.propEq('pid'), R.filter);
 
@@ -71,15 +57,27 @@ export const removeFromList = R.curry((c, list) => {
 
 export const removeWithParent = R.curry((pid, list) => {
   let newList,
-    currentPrcnt;
-
-    let childrens = filterByParent(pid)(list);
-    let lengthLeft = list.length - childrens.length;
+    currentPrcnt,
+    childrens = filterByParent(pid)(list),
+    lengthLeft = list.length - childrens.length;
+    
     currentPrcnt = lengthLeft > 1 ? 100 / lengthLeft : 100;
     newList = R.map(i => ({...i, prcnt: currentPrcnt}), R.without(childrens, list));
 
     return newList;
 });
+
+export const patchWithError = R.curry((err, id, list) => {
+  let c = R.find(R.propEq('id', id), list),
+    index = list.indexOf(c);
+
+  return [
+    ...list.slice(0, index),
+    {...c, err: err},
+    ...list.slice(index + 1)
+  ];
+});
+
 
 function sliceList(i, list) {
   return [

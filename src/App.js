@@ -19,13 +19,14 @@ export default class App extends React.Component {
     // let saved = Object.keys(appActions.getAllLists());
     return(
       <div className="container">
-        <Header saved={this.state.allLists} showListById={listActions.renderFromList} showNewList={listActions.renderNewList} />
+        <Header
+          saved={this.state.allLists}
+          showListById={listActions.renderFromList}
+          showNewList={listActions.renderNewList} />
         <List
           categories={this.state.categories}
           items={this.state.items}
-          listId={this.state.currentList}
-          errors={this.state.errors}
-        />
+          list={this.state.list} />
       </div>
     );
   }

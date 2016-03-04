@@ -12,7 +12,7 @@ export default class ErrorsPanel extends React.Component {
   }
 
   render() {
-    let errors = this.props.errors.map(error => this.renderError(error));
+    let errors = this.renderError(this.props.errors);
 
     return (
       <div>

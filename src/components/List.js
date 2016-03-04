@@ -17,7 +17,7 @@ export default class List extends React.Component {
 
   saveList(e) {
     e.preventDefault();
-    listActions.saveList(this.props.listId);
+    listActions.saveList(this.props.list.id);
   }
 
   render() {
@@ -35,9 +35,9 @@ export default class List extends React.Component {
 
     return(
       <div>
-        <ErrorsPanel errors={this.props.errors} />
+        <ErrorsPanel errors={this.props.list.err} />
         <ListPanel
-          listId={this.props.listId}
+          listId={this.props.list.id}
           addCategory={this.addCategory}
           saveList={this.saveList.bind(this)}
           categories={categories}

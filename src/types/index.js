@@ -12,20 +12,21 @@ const CategoryActionType = unionType({
   Add: [Number], // id
   Edit: [Object, Number], // c, prcnt
   Remove: [Object], // c
-  Reset: [Array]
+  Reset: [Array],
+  ShowEmptyError: [Number]
 });
 
 const ListActionType = unionType({
   Save: [],
   RenderList: [],
-  NewList: []
+  NewList: [],
+  ShowEmptyError: []
 });
 
 const ActionType = unionType({
   Categories: [CategoryActionType],
   Items: [ItemActionType],
-  List: [ListActionType],
-  Errors: [String]
+  List: [ListActionType]
 });
 
 export {
