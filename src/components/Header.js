@@ -1,6 +1,12 @@
 import React from 'react';
+import listActions from '../streams/list';
+import DropdownItem from './DropdownItem';
 
 export default class Header extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
   renderSavedLists() {
     if (!this.props.saved.length) {
       return;
@@ -13,8 +19,8 @@ export default class Header extends React.Component {
           <span className="caret"></span>
         </a>
         <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-          {this.props.saved.map(list => {
-            return <li key={list}><a onClick={() => {this.props.showListById(list)}} href="#">{list}</a></li>
+          {this.props.saved.map(id => {
+            return <DropdownItem list={id} />
           })}
         </ul>
       </li>
@@ -26,7 +32,7 @@ export default class Header extends React.Component {
         <div className="header clearfix">
           <nav>
             <ul className="nav nav-pills pull-right">
-              <li key="0" role="presentation"><a onClick={this.props.showNewList} href="#">New List</a></li>
+              <li key="0" role="presentation"><a onClick={listActions.createNewList} href="#">New List</a></li>
               {this.renderSavedLists()}
             </ul>
           </nav>

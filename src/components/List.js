@@ -9,6 +9,11 @@ import listActions from '../streams/list';
 const byId = R.groupBy(R.prop('pid'));
 
 export default class List extends React.Component {
+  constructor(props) {
+    super(props);
+    this.saveList = this.saveList.bind(this);
+  }
+
   addCategory(e) {
     e.preventDefault();
     let categoryId = Number(e.target.elements["addCategorySel"].value);
@@ -39,7 +44,7 @@ export default class List extends React.Component {
         <ListPanel
           listId={this.props.list.id}
           addCategory={this.addCategory}
-          saveList={this.saveList.bind(this)}
+          saveList={this.saveList}
           categories={categories}
         />
       </div>

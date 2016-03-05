@@ -2,16 +2,57 @@ import R from 'ramda';
 import flyd from 'flyd';
 import mergeAll from 'flyd/module/mergeall';
 import actionsStream from './main';
+import itemsActions from './items';
+import categoriesActions from './categories';
 import {createActions} from '../utils';
 import {ListActionType, ActionType} from '../types';
+import storage from '../storage';
 
-const actions = createActions(['saveList', 'renderFromList', 'renderNewList']);
+const emptyListError = {
+  type: 'EMPTY_LIST',
+  message: 'Add some categories'
+};
+
+const actions = createActions(['saveNewList','saveExsistingList','renderList','createNewList','showEmptyError']);
 const allActions = mergeAll([
-  actions.saveList.map(ListActionType.Save),
-  actions.renderFromList.map(ListActionType.RenderList),
-  actions.renderNewList.map(ListActionType.NewList)
+  actions.saveNewList.map(ListActionType.SaveNewList),
+  actions.saveExsistingList.map(ListActionType.SaveExsistingList),
+  actions.renderList.map(ListActionType.RenderList),
+  actions.createNewList.map(_ => ListActionType.CreateNewList()),
+  actions.showEmptyError.map(ListActionType.ShowEmptyError)
 ]);
+
 flyd.on(R.pipe(ActionType.List, actionsStream), allActions);
+
+export const ListCases = ListActionType.caseOn({
+  SaveNewList: (state) => {
+    let id = storage.saveList(state);
+    return R.evolve({list: {id: id}}, state);
+  },
+  SaveExsistingList: (id, state) => {
+    storage.updateList(id, state);
+    return state;
+  },
+  RenderList: (id, state) => {
+    let listData = storage.getList(id);
+
+    itemsActions.reset(listData.items);
+    categoriesActions.reset(listData.categories);
+
+    return R.evolve({
+      list: listData.list
+    }, state);
+  },
+  CreateNewList: (state) => {
+    itemsActions.reset([]);
+    categoriesActions.reset([]);
+
+    return R.evolve({list: R.always({id: null})}, state);
+  },
+  ShowEmptyError: (state) => {
+    return R.evolve({list: {...state.list, err: emptyListError}}, state);
+  }
+});
 
 export default actions;
 

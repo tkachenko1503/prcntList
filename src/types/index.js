@@ -17,9 +17,10 @@ const CategoryActionType = unionType({
 });
 
 const ListActionType = unionType({
-  Save: [],
-  RenderList: [],
-  NewList: [],
+  SaveNewList: [],
+  SaveExsistingList: [Number],
+  RenderList: [Number],
+  CreateNewList: [],
   ShowEmptyError: []
 });
 

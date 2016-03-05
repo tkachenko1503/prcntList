@@ -6,6 +6,8 @@ export default class Editable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {editing: false};
+    this.saveEditedCallback = this.saveEditedCallback.bind(this);
+    this.toggleEditingState = this.toggleEditingState.bind(this);
   }
 
   toggleEditingState(e) {
@@ -36,11 +38,11 @@ export default class Editable extends React.Component {
 
     if (this.state.editing) {
       return (
-        <EditableForm submitCallback={this.saveEditedCallback.bind(this)} cancelCallback={this.toggleEditingState.bind(this)} />
+        <EditableForm submitCallback={this.saveEditedCallback} cancelCallback={this.toggleEditingState} />
       );
     } else {
       return (
-        <EditableFormButton openEditingForm={this.toggleEditingState.bind(this)} />
+        <EditableFormButton openEditingForm={this.toggleEditingState} />
       );
     }
   }
