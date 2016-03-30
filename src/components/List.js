@@ -1,53 +1,73 @@
+import Type from 'union-type';
 import React from 'react';
 import R from 'ramda';
-import ErrorsPanel from './ErrorsPanel';
-import ListPanel from './ListPanel';
-import Category from './Category';
-import categoriesActions from '../streams/categories';
-import listActions from '../streams/list';
+import flyd from 'flyd';
+import forwardTo from 'flyd-forwardto';
 
-const byId = R.groupBy(R.prop('pid'));
+import {MaybeNum} from '../types/Maybe';
 
-export default class List extends React.Component {
+// MODEL
+
+const Model = Type({
+  List: {
+    id: Number,
+    categories: Array,
+    items: Array
+  }
+});
+
+// return initial model
+const init = (id = -1) => {
+  // @TODO get list by id from store
+  return Model.ListOf({
+    id: id,
+    categories: [],
+    items: []
+  });
+};
+
+// UPDATE
+
+// action types
+const Actions = Type({
+  SaveList: [MaybeNum], // id or null
+  CreateNewList: []
+});
+
+// state reducer
+const update = Actions.caseOn({
+  SaveList: (id, state) => state,
+  CreateNewList: (state) => state
+});
+
+// VIEW
+
+class View extends React.Component {
   constructor(props) {
     super(props);
-    this.saveList = this.saveList.bind(this);
-  }
 
-  addCategory(e) {
-    e.preventDefault();
-    let categoryId = Number(e.target.elements["addCategorySel"].value);
-    categoriesActions.add(categoryId);
-  }
-
-  saveList(e) {
-    e.preventDefault();
-    listActions.saveList(this.props.list.id);
+    // handlers
+    this.save$ = forwardTo(props.actions$, (e) => {
+      return Actions.SaveList(MaybeNum.from(12));
+    });
+    this.create$ = forwardTo(props.actions$, R.always(Actions.CreateNewList()));
   }
 
   render() {
-    let items = byId(this.props.items);
-    let canEditCategory = this.props.categories.length > 1;
-    let canEditItem = this.props.items.length > 1;
-    let categories = this.props.categories.map((category, i) => {
-      return <Category
-                key={i}
-                params={category}
-                items={items[category.id]}
-                canEditCategory={canEditCategory}
-                canEditItem={canEditItem} />
-    });
+    const {actions$, model} = this.props;
 
-    return(
+    return (
       <div>
-        <ErrorsPanel errors={this.props.list.err} />
-        <ListPanel
-          listId={this.props.list.id}
-          addCategory={this.addCategory}
-          saveList={this.saveList}
-          categories={categories}
-        />
+        This is List!
+        <button onClick={this.save$}>
+          Test SaveList
+        </button>
+        <button onClick={this.create$}>
+          Test CreateNewList
+        </button>
       </div>
     );
   }
 }
+
+export default {Model, Actions, View, update, init};
